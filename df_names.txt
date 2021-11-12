@@ -21,9 +21,14 @@ hoga_names = ['time', 's10', 'sv10', 's9', 'sv9', 's8', 'sv8', 's7', 'sv7', 's6'
 
 """
 time : HHMMSS
-cv : conclusion volume
-acv : accumulating conclusion volume
-cs : conclusion strength
-group : group
+tp : trading price(체결가)
+udr : up down rate(등락률)
+tv : trading volume(체결량)
+trr : trading rotation rate(거래회전율)
+ts : trading strength(체결강도)
+fs : first sell(최우선매도호가)
+fb : first buy(최우선매수호가)
+market : market group
 """
-trading_names =['time', 'cv', 'acv', 'cs', 'group']
+trading_names =['time', 'tp', 'udr', 'tv',
+            'trr', 'ts', 'fs', 'fb', 'market']

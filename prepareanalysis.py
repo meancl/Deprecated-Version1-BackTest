@@ -44,7 +44,8 @@ hoga_df['b10'] = abs(hoga_df['b10'])
 
 
 
-trading_names =['time', 'cv', 'acv', 'cs', 'group'] 
+trading_names =['time', 'tp', 'udr', 'ta',
+            'trr', 'ts', 'fs', 'fb', 'market']
 trading_df = pd.read_csv(trading_dir + file_name, names=trading_names)
 
 hoga_df.drop(hoga_df[hoga_df['sav']==0].index, inplace=True)
@@ -198,6 +199,7 @@ prev_sv1 = first_line['sv1']
 prev_sv2 = first_line['sv2']
 prev_sv3 = first_line['sv3']
 volume_diff_until_third = []
+volume_until_third = []
 volume_diff_relative_rate_until_third =[]  #바로 이전과 현재 차이 대 바로이전 비율, 상대적인비율
 volume_diff_absoulte_rate_until_third =[]  #바로 이전과 현재 차이 대 총매수, 매도잔량 의 비율
 volume_absoulte_rate_until_third = []  # 현재 대 총잔량의 비율
@@ -260,6 +262,9 @@ for idx in range(hoga_df.shape[0]):
     prev_sv1 = df['sv1']
     prev_sv2 = df['sv2']
     prev_sv3 = df['sv3']
+
+    volume_until_third.append([df['time'], df['s3'], df['s2'], df['s1'],
+                                 df['b1'], df['b2'], df['b3'] ])
 
     volume_relative_rate_until_third.append([df['time'], relative_rate_sv3, relative_rate_sv2,
                                                     relative_rate_sv1, relative_rate_bv1,
@@ -343,6 +348,7 @@ def find_inclination_and_variance(segment:list) -> Tuple[int]:
     inclination = segment[0][6]
     check_val = segment[0][1] # 1 : stayting_tick
     last_signal = False
+    count = 3
     for idx in range(1, seg_len):
 
         s = segment[idx]
@@ -351,6 +357,7 @@ def find_inclination_and_variance(segment:list) -> Tuple[int]:
             check_val = s[1]
             front_variance += abs(s[6])
             inclination += s[6]
+            count += 1
         else:
             check_val += 1
             
@@ -361,7 +368,7 @@ def find_inclination_and_variance(segment:list) -> Tuple[int]:
     front_variance += abs(s[4]) + abs(s[2])
     inclination += s[4] + s[2]
 
-    return front_variance, inclination
+    return front_variance, inclination, count
            
 def find_movement_volume(sub_volume:Series, sub_moved_list:List[bool])-> List[float]:
     pass
