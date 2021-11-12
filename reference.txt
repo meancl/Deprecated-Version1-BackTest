@@ -1,0 +1,12 @@
+함수명
+https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=jhsgo&logNo=221526307126
+https://goni9071.tistory.com/267
+
+
+https://github.com/kdseo/PyTrader/blob/master/Kiwoom.py
+
+
+실시간 데이터 제한 갯수 ====================================================================================
+SetRealReg 함수를 통해 한번에 최대 100종목의 실시간시세 등록이 가능합니다.
+화면번호를 바꾸며 100종목씩 SetRealReg 를 사용한다면 10번 호출로 1,000개 종목이 등록 됩니다.
+실시간시세 등록은 서버의 부하보다는 사용자의 PC환경 (CPU사용량, 메모리사용량, 네트워크부하)에 더 크게 영향을 줍니다. 

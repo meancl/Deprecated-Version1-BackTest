@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import pandas as pd
 import os
 from typing import Tuple, Dict, List
@@ -82,3 +83,10 @@ trading_tracking = 0
 #     if tup[0]:
 #         print(row[0],' gap error : ', tup[1])
 
+=======
+dic = {1:[1,2],2:[2,3]}
+
+for i in dic.values():
+    print(i)
+    
+>>>>>>> d3d0fd439da59cf35b16260ff35e9d1bae698ebc

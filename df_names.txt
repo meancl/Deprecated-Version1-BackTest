@@ -1,0 +1,29 @@
+
+# 파일순서가 매수10 ~ 매도10
+"""
+b : buy
+s : sell
+
+sav : sell all volume
+savd : sell all volume diff than right before sav
+bav : buy all volume
+bavd : buy all volume diff than right before bav
+pbv : pure buy volume (bav - sav)
+br : buy rate
+sr : sell rate
+"""
+hoga_names = ['time', 's10', 'sv10', 's9', 'sv9', 's8', 'sv8', 's7', 'sv7', 's6', 'sv6',
+            's5', 'sv5', 's4', 'sv4', 's3', 'sv3', 's2', 'sv2', 's1', 'sv1',
+            'b1', 'bv1', 'b2', 'bv2', 'b3', 'bv3', 'b4', 'bv4', 'b5', 'bv5', 'b6', 'bv6',
+            'b7', 'bv7', 'b8', 'bv8', 'b9', 'bv9', 'b10', 'bv10', 
+            'sav', 'savd', 'bav', 'bavd', 'pbv', 'br', 'sr']
+
+
+"""
+time : HHMMSS
+cv : conclusion volume
+acv : accumulating conclusion volume
+cs : conclusion strength
+group : group
+"""
+trading_names =['time', 'cv', 'acv', 'cs', 'group']
