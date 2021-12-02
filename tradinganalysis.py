@@ -9,7 +9,7 @@ import time
 import matplotlib.pyplot as plt
 from math import *
 
-file_name = '2021-11-12-160550.txt'
+file_name = '2021-11-12-206560.txt'
 
 trading_dir = 'F:/Trading/'
 score_dir = 'F:/Score/'
@@ -63,6 +63,13 @@ def s(a):
 
 
 num_between_tick = 16
+small_jar_size = 60
+
+small_jar_list = []
+small_jar_buy_score = 0
+small_jar_sell_score = 0
+
+
 volume_list = []
 time_list = []
 variation_list = []
@@ -81,6 +88,7 @@ total_variation = 0
 mean_variation = 0
 rough_time_speed = 0
 time_speed_check_idx = 0
+time_accum_idx = 1
 prev_time = trading_df['time'].iat[0]
 
 accum_tv = 0
@@ -104,6 +112,7 @@ for idx in range(trading_df.shape[0]):
         time_speed_check_idx += 1
 
     else :
+        time_accum_idx += 1
         rough_time_speed = (rough_time_speed + time_speed_check_idx) /2
         prev_time = tt
         time_speed_check_idx = 1
@@ -126,7 +135,7 @@ for idx in range(trading_df.shape[0]):
     
 
     fs_gap = get_kosdaq_gap(fs)
-
+    fb_gap = get_kosdaq_gap(fb)
     
     volume_list.append(tv)
     accum_tv += abs(tv)
@@ -172,13 +181,17 @@ for idx in range(trading_df.shape[0]):
                 mul_symbol = -1
                 numerator_cnt = num_between_tick - buy_cnt
 
-        volume_rate = numerator / denominator
-        volume_rate = volume_rate * ( denominator / volume_sum)
-        volume_over_weight  = numerator / 1000
-        volume_over_weight = 10 if volume_over_weight >10 else volume_over_weight
+        numerator = 1 if numerator ==0 else numerator
+        volume_rate = (numerator - denominator)/ numerator 
+        # volume_rate = volume_rate * ( denominator / volume_sum)
+        # volume_over_weight  = ( numerator - denominator )/ 1000 
+        # volume_over_weight = log10(1+volume_over_weight)
+
+        # volume_rate *= volume_rate
+        # #volume_over_weight = 10 if volume_over_weight > 10 else volume_over_weight
         volume_rate *= mul_symbol
         volume_cnt_rate = numerator_cnt / num_between_tick  
-
+        # volume_cnt_rate *= volume_cnt_rate
         time_gap = tt - time_list.pop(0)
     
 
@@ -194,8 +207,8 @@ for idx in range(trading_df.shape[0]):
     volume_mul_weight =1
     mean_volume = 1
     if len(fs_list) >= num_between_tick:
-        # fs_flow =  fs*7 - (fs_list[num_between_tick-2] + fs_list[num_between_tick-4] + fs_list[num_between_tick-6] + fs_list[num_between_tick-8] + fs_list[num_between_tick-10] + fs_list[num_between_tick-12] + fs_list[num_between_tick-14]) 
-        # fs_flow = round(fs_flow /(7 * fs_gap) , 2)
+        fs_flow =  fs*7 - (fs_list[num_between_tick-2] + fs_list[num_between_tick-4] + fs_list[num_between_tick-6] + fs_list[num_between_tick-8] + fs_list[num_between_tick-10] + fs_list[num_between_tick-12] + fs_list[num_between_tick-14]) 
+        fs_flow = round(fs_flow /(7 * fs_gap) , 2)
         # ts_move = ts* 5 - (ts_list[num_between_tick-5] +ts_list[num_between_tick-8] +ts_list[num_between_tick-10] +ts_list[num_between_tick-12] +ts_list[num_between_tick-15] )
         # ts_move = round(ts_move/5 ,2 )
 
@@ -208,18 +221,39 @@ for idx in range(trading_df.shape[0]):
         ts_flow = (1.005 ** abs(ts_-100))
         ts_flow = round(ts_flow,2)
         
-        volume_score = volume_cnt_rate * volume_rate 
+        volume_score = volume_rate * volume_cnt_rate
         volume_mul_weight = ( ts_flow if ( volume_score > 0 and ts> 100 ) or( volume_score < 0 and ts < 100 ) else 1)
-        
         volume_score = round(volume_score, 2)
 
-    cur_score = volume_score * volume_mul_weight  * volume_over_weight
-    
+
+
+    cur_score = volume_score * volume_mul_weight  
+    time_speed_per_sec = (idx+1) / time_accum_idx
+    time_speed_per_sec = round(time_speed_per_sec,2)
     short_jar_score += cur_score
     cur_score_list.append(cur_score)
     jar_score += cur_score
+    if len(small_jar_list) > small_jar_size:
+        popped = small_jar_list.pop(0)
+        if popped > 0:
+            small_jar_buy_score -= popped
+        else:
+            small_jar_sell_score += popped
+
+    small_jar_list.append(cur_score)
+
+    if cur_score > 0:
+        small_jar_buy_score += cur_score
+    else:
+        small_jar_sell_score -= cur_score
     
-    sf.writelines([s(tt),'\t',  s(fs),'\t',  s(ts),'\t\t', s(fs_flow),'\t',  s(round(volume_rate,2)),'\t',s(round(volume_cnt_rate,2)),'\t',s(round(volume_mul_weight,2)),'\t',s(round(volume_over_weight,2)),'\t\t',  s(round(cur_score,2)),'\t',s(round(short_jar_score,2)),'\t',  s(round(jar_score,2)),'\n'])
+
+    sf.writelines([s(tt),'\t',s(time_speed_per_sec), '\t',  s(fs),'\t',  s(ts),'\t\t',
+     s(round(volume_rate,2)),'\t',s(round(volume_cnt_rate,2)),'\t',
+     s(round(volume_mul_weight,2)),'\t\t',
+     s(round(cur_score,3)),'\t\t',
+     s(round(small_jar_buy_score,2)),'\t',s(round(small_jar_sell_score,2)),'\t\t',
+       s(round(jar_score,2)),'\n'])
 
     cur_score = 0
 
